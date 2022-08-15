@@ -1,0 +1,58 @@
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css");
+
+.label {
+  font-size: calc(30px + 2vmin) !important;
+  text-align: center;
+  font-weight: 200;
+}
+
+.search {
+  border-bottom: 1px solid #acacac !important;
+  margin-top: 1em;
+  text-align: center;
+  font-size: calc(20px + 2vmin) !important;
+  font-weight: 200;
+  color: #666666 !important;
+  opacity: 1;
+  transition: opacity 300ms;
+}
+
+.searchLoading {
+  opacity: 0.2;
+  transition: opacity 300ms;
+}
+
+.imageSliderContainer {
+  position: relative;
+  padding: 10px 30px !important;
+}
+
+.imageSliderControl {
+  position: absolute;
+  top:0;
+  bottom:0;
+  width: 35px;
+  text-align: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imageSliderControlLeft {
+  left: 0px;
+  background: linear-gradient(90deg, rgba(150,150,150,0.1), rgba(150,150,150,0));
+}
+.imageSliderControlLeft:hover {
+  background: linear-gradient(90deg, rgba(150,150,150,0.3), rgba(150,150,150,0));
+}
+
+.imageSliderControlRight {
+  right: 0px;
+  background: linear-gradient(90deg, rgba(150,150,150,0), rgba(150,150,150,0.1));
+}
+.imageSliderControlRight:hover {
+  right: 0px;
+  background: linear-gradient(90deg, rgba(150,150,150,0), rgba(150,150,150,0.3));
+}
