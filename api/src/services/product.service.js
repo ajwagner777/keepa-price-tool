@@ -6,7 +6,8 @@ const searchForProducts = async (term = "", page = 1, filters = {}) => {
   try {
     let query = {
         title: term,
-        page,
+        page: page - 1,
+        productType: 0,
         perPage: keepa.pageSize,
       },
       payload = {
@@ -21,14 +22,14 @@ const searchForProducts = async (term = "", page = 1, filters = {}) => {
     // Add filters to the query
     if (filters.discountPercentage) query.deltaPercent90_NEW_gte = filters.discountPercentage
     if (filters.ratingCount) query.current_COUNT_REVIEWS_gte = filters.ratingCount
-    if (filters.brands) query.brand = [filters.brands]
+    if (filters.brand) query.brand = filters.brand
 
     if (filters.priceMax || filters.priceMin) {
-      query.current_NEW_lte = filters.priceMax || 9999999
-      query.current_NEW_gte = filters.priceMin || 0
+      query.current_NEW_lte = filters.priceMax * 100 || 9999999
+      query.current_NEW_gte = filters.priceMin * 100 || 0
     }
 
-    console.log(query)
+    //console.log({query,filters})
     
     // Find all product ASIN's matching the query above
     let products = await axios.post(`${keepa.baseUrl}/query?key=${keepa.key}&domain=${keepa.domain}`, query)
@@ -40,7 +41,14 @@ const searchForProducts = async (term = "", page = 1, filters = {}) => {
     let asinList = products.data.asinList || []
 
     // Get product data from the list of ASINs
-    let fullResults = await axios.get(`${keepa.baseUrl}/product?key=${keepa.key}&history=1&days=${keepa.daysOfHistory}&domain=${keepa.domain}&asin=${asinList.join(',')}`)
+    let queryParams = {
+      key: keepa.key,
+      domain: keepa.domain,
+      history: 1,
+      days: keepa.daysOfHistory,
+      asin: asinList.join(',')
+    }
+    let fullResults = await axios.get(`${keepa.baseUrl}/product`, { params: queryParams })
     payload.results = (fullResults?.data?.products || []).map(product => {
       return {
         ASIN: product.asin,
@@ -64,7 +72,9 @@ const searchForProducts = async (term = "", page = 1, filters = {}) => {
 const extractCsvData = (hist) => {
   let csvData = []
   let data = {timestamp: 0, date: null, price: null}
-  let currentPrice = 0
+  let current = null,
+    avgPrice = 0,
+    avgCount = 0
 
   hist.forEach((h, idx) => {
     // even indecies have date, odds have price
@@ -74,13 +84,26 @@ const extractCsvData = (hist) => {
     } else {
       data.price = h == -1 ? null : h / 100
       csvData.push(data)
-      if (h !== -1) currentPrice = h / 100
-      // Reset the object to defaul
+      if (h !== -1) {
+        current = data
+        avgCount++
+        avgPrice += data.price
+      }
+      // Reset the object to default
       data = {timestamp: 0, date: null, price: null}
     }
   })
 
-  return {history: csvData, currentPrice}
+  // Calculate average and change
+  let average = avgCount ? avgPrice / avgCount : null
+  let change = current?.price && average ? (current?.price - average) / current?.price : null
+
+  return {
+    history: csvData, 
+    current,
+    average,
+    change,
+  }
 }
 
 const normalizeKeepaDate = (keepaDate, format = false) => {
