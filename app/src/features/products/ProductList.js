@@ -8,7 +8,7 @@ import ProductCard from './ProductCard'
 
 import styles from './ProductList.module.css'
 
-export default () => {
+const ProductList = () => {
   const dispatch = useDispatch()
   const products = useSelector(selectProducts)
   
@@ -141,3 +141,5 @@ export default () => {
     </div>
   </>
 }
+
+export default ProductList

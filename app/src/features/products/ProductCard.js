@@ -1,16 +1,16 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import numeral from 'numeral'
 import classnames from 'classnames'
 import { ResponsiveLineCanvas } from '@nivo/line'
 import styles from './ProductList.module.css'
 
-export default ({ product }) => {
+const ProductCard = ({ product }) => {
   const [selectedImage, setSelectedImage] = useState(0)
 
   const handleImageSelect = (direction) => {
     let images = product.images.length
-    if (direction == -1 && selectedImage == 0) setSelectedImage(product.images.length - 1)
-    else if (direction == 1 && (images - 1) == selectedImage) setSelectedImage(0)
+    if (direction === -1 && selectedImage === 0) setSelectedImage(product.images.length - 1)
+    else if (direction === 1 && (images - 1) === selectedImage) setSelectedImage(0)
     else setSelectedImage(selectedImage + direction)
   }
 
@@ -72,7 +72,7 @@ export default ({ product }) => {
         </div>
         <div className="col-md-8">
           <div className="card-body">
-            <h4 className="card-title"><a href={product.url} target="_blank">{product.title}</a></h4>
+            <h4 className="card-title"><a href={product.url} target="_blank" rel="noreferrer">{product.title}</a></h4>
             <div className='row'>
               <div className='col'>{product.brand}</div>
               <div className='col'><p className="card-text"><small className="text-muted">Last updated: {product.price.current ? new Date(product.price.current?.date).toLocaleDateString() : "Unknown"}</small></p></div>
@@ -105,3 +105,5 @@ export default ({ product }) => {
     </div>
   )
 }
+
+export default ProductCard
